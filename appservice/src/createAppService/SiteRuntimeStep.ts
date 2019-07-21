@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ApplicationStack } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import { WebResource } from 'ms-rest';
 import * as request from 'request-promise';
 import { appendExtensionUserAgent, AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
@@ -16,7 +16,7 @@ import { IAppServiceWizardContext } from './IAppServiceWizardContext';
 
 type ApplicationStackJsonResponse = {
     value: [{
-        properties: ApplicationStack
+        properties: Models.ApplicationStack
     }]
 };
 
@@ -50,7 +50,7 @@ export class SiteRuntimeStep extends AzureWizardPromptStep<IAppServiceWizardCont
     }
 
     // the sdk has a bug that doesn't retrieve the full response for provider.getAvailableStacks(): https://github.com/Azure/azure-sdk-for-node/issues/5068
-    private async getLinuxRuntimeStack(wizardContext: IAppServiceWizardContext): Promise<ApplicationStack[]> {
+    private async getLinuxRuntimeStack(wizardContext: IAppServiceWizardContext): Promise<Models.ApplicationStack[]> {
         const requestOptions: WebResource = new WebResource();
         requestOptions.headers = {
             ['User-Agent']: appendExtensionUserAgent()
@@ -64,7 +64,7 @@ export class SiteRuntimeStep extends AzureWizardPromptStep<IAppServiceWizardCont
     }
 }
 
-export function convertStacksToPicks(stacks: ApplicationStack[], recommendedRuntimes: LinuxRuntimes[] | undefined): IAzureQuickPickItem<string>[] {
+export function convertStacksToPicks(stacks: Models.ApplicationStack[], recommendedRuntimes: LinuxRuntimes[] | undefined): IAzureQuickPickItem<string>[] {
     function getPriority(data: string): number {
         // tslint:disable-next-line: strict-boolean-expressions
         recommendedRuntimes = recommendedRuntimes || [];

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementModels } from 'azure-arm-website';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import { window } from 'vscode';
 import { AzureTreeItem, IActionContext, IAzureQuickPickItem, IAzureQuickPickOptions, UserCancelledError } from 'vscode-azureextensionui';
 import { ext } from './extensionVariables';
@@ -15,7 +15,7 @@ import { ISiteTreeRoot } from './tree/ISiteTreeRoot';
 import { nonNullProp } from './utils/nonNull';
 
 export async function editScmType(client: SiteClient, node: AzureTreeItem<ISiteTreeRoot>, context: IActionContext, newScmType?: ScmType, showToast: boolean = true): Promise<ScmType | undefined> {
-    const config: WebSiteManagementModels.SiteConfigResource = await client.getSiteConfig();
+    const config: Models.SiteConfigResource = await client.getSiteConfig();
     // tslint:disable-next-line:strict-boolean-expressions
     newScmType = newScmType ? newScmType : await showScmPrompt(nonNullProp(config, 'scmType'));
     if (newScmType === ScmType.GitHub) {
@@ -36,7 +36,7 @@ export async function editScmType(client: SiteClient, node: AzureTreeItem<ISiteT
     }
 
     if (newScmType === ScmType.LocalGit) {
-        const user: WebSiteManagementModels.User = await client.getPublishingUser();
+        const user: Models.User = await client.getPublishingUser();
         if (user.publishingUserName) {
             // first time users must set up deployment credentials via the Portal or they will not have a UserName
             const gitCloneUri: string = `https://${user.publishingUserName}@${client.gitUrl}`;

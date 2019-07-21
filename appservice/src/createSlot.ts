@@ -3,23 +3,22 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import WebSiteManagementClient from "azure-arm-website";
-import { NameValuePair, ResourceNameAvailability, Site, StringDictionary } from "azure-arm-website/lib/models";
+import { WebSiteManagementClient, WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import { ProgressLocation, window } from "vscode";
-import { AzureTreeItem, createAzureClient, IAzureQuickPickItem, ICreateChildImplContext } from "vscode-azureextensionui";
+import { AzureTreeItem, createAzureClientV2, IAzureQuickPickItem, ICreateChildImplContext } from "vscode-azureextensionui";
 import { ext } from "./extensionVariables";
 import { localize } from "./localize";
 import { SiteClient } from './SiteClient';
 import { ISiteTreeRoot } from "./tree/ISiteTreeRoot";
 
-export async function createSlot(root: ISiteTreeRoot, existingSlots: AzureTreeItem<ISiteTreeRoot>[], context: ICreateChildImplContext): Promise<Site> {
-    const client: WebSiteManagementClient = createAzureClient(root, WebSiteManagementClient);
+export async function createSlot(root: ISiteTreeRoot, existingSlots: AzureTreeItem<ISiteTreeRoot>[], context: ICreateChildImplContext): Promise<Models.Site> {
+    const client: WebSiteManagementClient = createAzureClientV2(root, WebSiteManagementClient);
     const slotName: string = (await ext.ui.showInputBox({
         prompt: localize('enterSlotName', 'Enter a unique name for the new deployment slot'),
         validateInput: async (value: string | undefined): Promise<string | undefined> => validateSlotName(value, client, root)
     })).trim();
 
-    const newDeploymentSlot: Site = {
+    const newDeploymentSlot: Models.Site = {
         name: slotName,
         kind: root.client.kind,
         location: root.client.location,
@@ -31,7 +30,7 @@ export async function createSlot(root: ISiteTreeRoot, existingSlots: AzureTreeIt
 
     const configurationSource: SiteClient | undefined = await chooseConfigurationSource(root, existingSlots);
     if (!!configurationSource) {
-        const appSettings: NameValuePair[] = await parseAppSettings(configurationSource);
+        const appSettings: Models.NameValuePair[] = await parseAppSettings(configurationSource);
         // tslint:disable-next-line:no-non-null-assertion
         newDeploymentSlot.siteConfig!.appSettings = appSettings;
     }
@@ -51,7 +50,7 @@ async function validateSlotName(value: string | undefined, client: WebSiteManage
         return localize('slotNotAvailable', 'The slot name "{0}" is not available.', value);
     }
 
-    const nameAvailability: ResourceNameAvailability = await client.checkNameAvailability(`${root.client.siteName}-${value}`, 'Slot');
+    const nameAvailability: Models.ResourceNameAvailability = await client.checkNameAvailability(`${root.client.siteName}-${value}`, 'Slot');
     if (!nameAvailability.nameAvailable) {
         return nameAvailability.message;
     }
@@ -86,9 +85,9 @@ async function chooseConfigurationSource(root: ISiteTreeRoot, existingSlots: Azu
     return (await ext.ui.showQuickPick(configurationSources, { placeHolder })).data;
 }
 
-async function parseAppSettings(siteClient: SiteClient): Promise<NameValuePair[]> {
-    const appSettings: StringDictionary = await siteClient.listApplicationSettings();
-    const appSettingPairs: NameValuePair[] = [];
+async function parseAppSettings(siteClient: SiteClient): Promise<Models.NameValuePair[]> {
+    const appSettings: Models.StringDictionary = await siteClient.listApplicationSettings();
+    const appSettingPairs: Models.NameValuePair[] = [];
     if (appSettings.properties) {
         // iterate String Dictionary to parse into NameValuePair[]
         for (const key of Object.keys(appSettings.properties)) {

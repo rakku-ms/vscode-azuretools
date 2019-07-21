@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SiteConfigResource } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as vscode from 'vscode';
 import { callWithTelemetryAndErrorHandling, DialogResponses, IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
@@ -15,7 +15,7 @@ export function reportMessage(message: string, progress: vscode.Progress<{}>): v
     progress.report({ message: message });
 }
 
-export async function setRemoteDebug(isRemoteDebuggingToBeEnabled: boolean, confirmMessage: string, noopMessage: string | undefined, siteClient: SiteClient, siteConfig: SiteConfigResource, progress?: vscode.Progress<{}>, learnMoreLink?: string): Promise<void> {
+export async function setRemoteDebug(isRemoteDebuggingToBeEnabled: boolean, confirmMessage: string, noopMessage: string | undefined, siteClient: SiteClient, siteConfig: Models.SiteConfigResource, progress?: vscode.Progress<{}>, learnMoreLink?: string): Promise<void> {
     const state: string | undefined = await siteClient.getState();
     if (state && state.toLowerCase() === 'stopped') {
         throw new Error(localize('remoteDebugStopped', 'The app must be running, but is currently in state "Stopped". Start the app to continue.'));

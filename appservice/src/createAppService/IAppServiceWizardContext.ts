@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppServicePlan, Site, SkuDescription } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import { IResourceGroupWizardContext, IStorageAccountWizardContext } from 'vscode-azureextensionui';
 import { AppKind, LinuxRuntimes, WebsiteOS } from './AppKind';
 
@@ -26,7 +26,7 @@ export interface IAppServiceWizardContext extends IResourceGroupWizardContext, I
      * The newly created site
      * This will be defined after `SiteCreateStep.execute` occurs.
      */
-    site?: Site;
+    site?: Models.Site;
 
     /**
      * The name of the new site
@@ -39,7 +39,7 @@ export interface IAppServiceWizardContext extends IResourceGroupWizardContext, I
      * If an existing plan is picked, this value will be defined after `AppServicePlanListStep.prompt` occurs
      * If a new plan is picked, this value will be defined after the `execute` phase of the 'create' subwizard
      */
-    plan?: AppServicePlan;
+    plan?: Models.AppServicePlan;
 
     /**
      * Whether or not to use a consumption plan
@@ -57,13 +57,13 @@ export interface IAppServiceWizardContext extends IResourceGroupWizardContext, I
      * The sku of the new plan
      * This will be defined after `AppServicePlanSkuStep.prompt` occurs.
      */
-    newPlanSku?: SkuDescription;
+    newPlanSku?: Models.SkuDescription;
 
     /**
      * The task used to get existing plans.
      * By specifying this in the context, we can ensure that Azure is only queried once for the entire wizard
      */
-    plansTask?: Promise<AppServicePlan[]>;
+    plansTask?: Promise<Models.AppServicePlan[]>;
 
     /**
      * The runtimes to put to the top of the QuickPick list to recommend to the user.

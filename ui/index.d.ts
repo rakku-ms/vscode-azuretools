@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzureServiceClientOptions as AzureServiceClientOptionsV2 } from "@azure/ms-rest-azure-js";
+import { ServiceClientCredentials as ServiceClientCredentialsV2 } from "@azure/ms-rest-js";
 import { ResourceGroup } from 'azure-arm-resource/lib/resource/models';
 import { Location } from 'azure-arm-resource/lib/subscription/models';
 import { StorageAccount } from 'azure-arm-storage/lib/models';
@@ -1094,8 +1096,17 @@ export declare function addExtensionUserAgent(client: IAddUserAgent): void;
  * 2. Uses resourceManagerEndpointUrl to support sovereigns
  */
 export function createAzureClient<T extends IAddUserAgent>(
-    clientInfo: { credentials: ServiceClientCredentials; subscriptionId: string; environment: AzureEnvironment; },
+    clientInfo: { credentials: ServiceClientCredentials; subscriptionId: string; environment: { resourceManagerEndpointUrl: string }; },
     clientType: new (credentials: ServiceClientCredentials, subscriptionId: string, baseUri?: string, options?: AzureServiceClientOptions) => T): T;
+
+/**
+ * Creates an Azure client, ensuring best practices are followed. For example:
+ * 1. Adds extension-specific user agent
+ * 2. Uses resourceManagerEndpointUrl to support sovereigns
+ */
+export function createAzureClientV2<T>(
+    clientInfo: { credentials: ServiceClientCredentials; subscriptionId: string; environment: { resourceManagerEndpointUrl: string }; },
+    clientType: new (credentials: ServiceClientCredentialsV2, subscriptionId: string, options?: AzureServiceClientOptionsV2 & { baseUri?: string }) => T): T;
 
 /**
  * Creates an Azure subscription client, ensuring best practices are followed. For example:
@@ -1103,7 +1114,7 @@ export function createAzureClient<T extends IAddUserAgent>(
  * 2. Uses resourceManagerEndpointUrl to support sovereigns
  */
 export function createAzureSubscriptionClient<T extends IAddUserAgent>(
-    clientInfo: { credentials: ServiceClientCredentials; environment: AzureEnvironment; },
+    clientInfo: { credentials: ServiceClientCredentials; environment: { resourceManagerEndpointUrl: string }; },
     clientType: new (credentials: ServiceClientCredentials, baseUri?: string, options?: AzureServiceClientOptions) => T): T;
 
 /**

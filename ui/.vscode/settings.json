@@ -12,5 +12,8 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.tslint": true,
     },
-    "tslint.ignoreDefinitionFiles": true
+    "tslint.ignoreDefinitionFiles": true,
+    "files.associations": {
+        "node_modules/**/*.d.ts": "plaintext"
+    }
 }

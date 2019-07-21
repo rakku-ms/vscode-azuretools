@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StringDictionary } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as path from 'path';
 import { AzureParentTreeItem, AzureTreeItem, IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { AppSettingTreeItem } from './AppSettingTreeItem';
 import { ISiteTreeRoot } from './ISiteTreeRoot';
 
-export function validateAppSettingKey(settings: StringDictionary, newKey?: string, oldKey?: string): string | undefined {
+export function validateAppSettingKey(settings: Models.StringDictionary, newKey?: string, oldKey?: string): string | undefined {
     newKey = newKey ? newKey.trim() : '';
     oldKey = oldKey ? oldKey.trim().toLowerCase() : oldKey;
     if (newKey.length === 0) {
@@ -32,7 +32,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     public readonly label: string = 'Application Settings';
     public readonly childTypeLabel: string = 'App Setting';
     public readonly contextValue: string = AppSettingsTreeItem.contextValue;
-    private _settings: StringDictionary | undefined;
+    private _settings: Models.StringDictionary | undefined;
     private _commandId: string;
 
     constructor(parent: AzureParentTreeItem, commandId: string) {
@@ -71,7 +71,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     public async editSettingItem(oldKey: string, newKey: string, value: string, context: IActionContext): Promise<void> {
         // make a deep copy so settings are not cached if there's a failure
         // tslint:disable-next-line: no-unsafe-any
-        const settings: StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: Models.StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
         if (settings.properties) {
             if (oldKey !== newKey) {
                 delete settings.properties[oldKey];
@@ -85,7 +85,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     public async deleteSettingItem(key: string, context: IActionContext): Promise<void> {
         // make a deep copy so settings are not cached if there's a failure
         // tslint:disable-next-line: no-unsafe-any
-        const settings: StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: Models.StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
 
         if (settings.properties) {
             delete settings.properties[key];
@@ -97,7 +97,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzureTreeItem<ISiteTreeRoot>> {
         // make a deep copy so settings are not cached if there's a failure
         // tslint:disable-next-line: no-unsafe-any
-        const settings: StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: Models.StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
         const newKey: string = await ext.ui.showInputBox({
             prompt: 'Enter new setting key',
             validateInput: (v?: string): string | undefined => validateAppSettingKey(settings, v)
@@ -119,11 +119,11 @@ export class AppSettingsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
         return await AppSettingTreeItem.createAppSettingTreeItem(this, newKey, newValue, this._commandId);
     }
 
-    public async ensureSettings(context: IActionContext): Promise<StringDictionary> {
+    public async ensureSettings(context: IActionContext): Promise<Models.StringDictionary> {
         if (!this._settings) {
             await this.getCachedChildren(context);
         }
 
-        return <StringDictionary>this._settings;
+        return <Models.StringDictionary>this._settings;
     }
 }

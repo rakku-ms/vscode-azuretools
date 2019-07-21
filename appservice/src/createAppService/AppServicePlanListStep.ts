@@ -3,10 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from 'azure-arm-website';
-import { AppServicePlan } from 'azure-arm-website/lib/models';
-import { AzureWizardPromptStep, createAzureClient, IAzureQuickPickOptions, IWizardOptions, LocationListStep, ResourceGroupListStep } from 'vscode-azureextensionui';
-import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { WebSiteManagementClient, WebSiteManagementModels as Models } from '@azure/arm-appservice';
+import { AzureWizardPromptStep, createAzureClientV2, IAzureQuickPickItem, IAzureQuickPickOptions, IWizardOptions, LocationListStep, ResourceGroupListStep } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { nonNullProp } from '../utils/nonNull';
@@ -18,9 +16,9 @@ import { AppServicePlanSkuStep } from './AppServicePlanSkuStep';
 import { IAppServiceWizardContext } from './IAppServiceWizardContext';
 
 export class AppServicePlanListStep extends AzureWizardPromptStep<IAppServiceWizardContext> {
-    public static async getPlans(wizardContext: IAppServiceWizardContext): Promise<AppServicePlan[]> {
+    public static async getPlans(wizardContext: IAppServiceWizardContext): Promise<Models.AppServicePlan[]> {
         if (wizardContext.plansTask === undefined) {
-            const client: WebSiteManagementClient = createAzureClient(wizardContext, WebSiteManagementClient);
+            const client: WebSiteManagementClient = createAzureClientV2(wizardContext, WebSiteManagementClient);
             wizardContext.plansTask = uiUtils.listAll(client.appServicePlans, client.appServicePlans.list());
         }
 
@@ -28,8 +26,8 @@ export class AppServicePlanListStep extends AzureWizardPromptStep<IAppServiceWiz
     }
 
     public static async isNameAvailable(wizardContext: IAppServiceWizardContext, name: string, resourceGroupName: string): Promise<boolean> {
-        const plans: AppServicePlan[] = await AppServicePlanListStep.getPlans(wizardContext);
-        return !plans.some((plan: AppServicePlan) =>
+        const plans: Models.AppServicePlan[] = await AppServicePlanListStep.getPlans(wizardContext);
+        return !plans.some((plan: Models.AppServicePlan) =>
             nonNullProp(plan, 'resourceGroup').toLowerCase() === resourceGroupName.toLowerCase() &&
             nonNullProp(plan, 'name').toLowerCase() === name.toLowerCase()
         );
@@ -60,14 +58,14 @@ export class AppServicePlanListStep extends AzureWizardPromptStep<IAppServiceWiz
         return !wizardContext.plan && !wizardContext.newPlanName;
     }
 
-    private async getQuickPicks(wizardContext: IAppServiceWizardContext): Promise<IAzureQuickPickItem<AppServicePlan | undefined>[]> {
-        const picks: IAzureQuickPickItem<AppServicePlan | undefined>[] = [{
+    private async getQuickPicks(wizardContext: IAppServiceWizardContext): Promise<IAzureQuickPickItem<Models.AppServicePlan | undefined>[]> {
+        const picks: IAzureQuickPickItem<Models.AppServicePlan | undefined>[] = [{
             label: localize('CreateNewAppServicePlan', '$(plus) Create new App Service plan'),
             description: '',
             data: undefined
         }];
 
-        const plans: AppServicePlan[] = await AppServicePlanListStep.getPlans(wizardContext);
+        const plans: Models.AppServicePlan[] = await AppServicePlanListStep.getPlans(wizardContext);
         for (const plan of plans) {
             const isNewSiteLinux: boolean = wizardContext.newSiteOS === WebsiteOS.linux;
             const isPlanLinux: boolean = nonNullProp(plan, 'kind').toLowerCase().includes(WebsiteOS.linux);

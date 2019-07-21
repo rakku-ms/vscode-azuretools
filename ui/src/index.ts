@@ -9,6 +9,7 @@ export * from './BaseEditor';
 export * from './callWithTelemetryAndErrorHandling';
 export * from './createApiProvider';
 export * from './createAzureClient';
+export * from './createAzureClientV2';
 export * from './createTelemetryReporter';
 export * from './DialogResponses';
 export * from './errors';

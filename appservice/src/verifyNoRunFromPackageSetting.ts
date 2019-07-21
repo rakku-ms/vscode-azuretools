@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StringDictionary } from "azure-arm-website/lib/models";
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import { formatDeployLog } from "./deploy/formatDeployLog";
 import { ext } from "./extensionVariables";
 import { localize } from "./localize";
@@ -13,7 +13,7 @@ import { SiteClient } from "./SiteClient";
 export async function verifyNoRunFromPackageSetting(client: SiteClient): Promise<void> {
     let updateSettings: boolean = false;
     const runFromPackageSettings: string[] = ['WEBSITE_RUN_FROM_PACKAGE', 'WEBSITE_RUN_FROM_ZIP'];
-    const applicationSettings: StringDictionary = await client.listApplicationSettings();
+    const applicationSettings: Models.StringDictionary = await client.listApplicationSettings();
     for (const settingName of runFromPackageSettings) {
         if (applicationSettings.properties && applicationSettings.properties[settingName]) {
             delete applicationSettings.properties[settingName];

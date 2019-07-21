@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SiteConfig, SiteSourceControl } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as path from 'path';
 import { MessageItem } from 'vscode';
 import { AzExtTreeItem, AzureParentTreeItem, DialogResponses, GenericTreeItem, IActionContext } from 'vscode-azureextensionui';
@@ -26,7 +26,7 @@ export class DeploymentsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     private _scmType?: string;
     private _repoUrl?: string;
 
-    public constructor(parent: AzureParentTreeItem<ISiteTreeRoot>, siteConfig: SiteConfig, sourceControl: SiteSourceControl, connectToGitHubCommandId: string) {
+    public constructor(parent: AzureParentTreeItem<ISiteTreeRoot>, siteConfig: Models.SiteConfig, sourceControl: Models.SiteSourceControl, connectToGitHubCommandId: string) {
         super(parent);
         this._connectToGitHubCommandId = connectToGitHubCommandId;
         this._scmType = siteConfig.scmType;
@@ -62,7 +62,7 @@ export class DeploymentsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzExtTreeItem[]> {
-        const siteConfig: SiteConfig = await this.root.client.getSiteConfig();
+        const siteConfig: Models.SiteConfig = await this.root.client.getSiteConfig();
         const deployments: DeployResult[] = await this.root.client.kudu.deployment.getDeployResults();
         const children: DeploymentTreeItem[] | GenericTreeItem[] = await this.createTreeItemsWithErrorHandling(
             deployments,
@@ -97,7 +97,7 @@ export class DeploymentsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     }
 
     public async disconnectRepo(context: IActionContext): Promise<void> {
-        const sourceControl: SiteSourceControl = await this.root.client.getSourceControl();
+        const sourceControl: Models.SiteSourceControl = await this.root.client.getSourceControl();
         const disconnectButton: MessageItem = { title: localize('disconnect', 'Disconnect') };
         const disconnect: string = localize('disconnectFromRepo', 'Disconnect from "{0}"? This will not affect your app\'s active deployment. You may reconnect a repository at any time.', sourceControl.repoUrl);
         await ext.ui.showWarningMessage(disconnect, { modal: true }, disconnectButton, DialogResponses.cancel);
@@ -106,8 +106,8 @@ export class DeploymentsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     }
 
     public async refreshImpl(): Promise<void> {
-        const siteConfig: SiteConfig = await this.root.client.getSiteConfig();
-        const sourceControl: SiteSourceControl = await this.root.client.getSourceControl();
+        const siteConfig: Models.SiteConfig = await this.root.client.getSiteConfig();
+        const sourceControl: Models.SiteSourceControl = await this.root.client.getSourceControl();
         this._scmType = siteConfig.scmType;
         this._repoUrl = sourceControl.repoUrl;
     }

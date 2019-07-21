@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from 'azure-arm-website';
-import { AzureWizardPromptStep, createAzureClient, IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { WebSiteManagementClient } from '@azure/arm-appservice';
+import { AzureWizardPromptStep, createAzureClientV2, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { AppKind, getWebsiteOSDisplayName, WebsiteOS } from './AppKind';
@@ -24,7 +24,7 @@ export class SiteOSStep extends AzureWizardPromptStep<IAppServiceWizardContext> 
             }
         }
 
-        const client: WebSiteManagementClient = createAzureClient(wizardContext, WebSiteManagementClient);
+        const client: WebSiteManagementClient = createAzureClientV2(wizardContext, WebSiteManagementClient);
         wizardContext.locationsTask = client.listGeoRegions(options);
     }
 

@@ -3,13 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementClient, WebSiteManagementModels as Models } from '@azure/arm-appservice';
 // tslint:disable-next-line:no-require-imports
 import StorageManagementClient = require('azure-arm-storage');
 import { StorageAccount, StorageAccountListKeysResult } from 'azure-arm-storage/lib/models';
-import { WebSiteManagementClient } from 'azure-arm-website';
-import { NameValuePair, SiteConfig } from 'azure-arm-website/lib/models';
 import { Progress } from 'vscode';
-import { AzureWizardExecuteStep, createAzureClient } from 'vscode-azureextensionui';
+import { AzureWizardExecuteStep, createAzureClient, createAzureClientV2 } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { nonNullProp, nonNullValue, nonNullValueAndProp } from '../utils/nonNull';
@@ -27,9 +26,9 @@ export interface IAppSettingsContext {
 export class SiteCreateStep extends AzureWizardExecuteStep<IAppServiceWizardContext> {
     public priority: number = 140;
 
-    private createFunctionAppSettings: ((context: IAppSettingsContext) => Promise<NameValuePair[]>) | undefined;
+    private createFunctionAppSettings: ((context: IAppSettingsContext) => Promise<Models.NameValuePair[]>) | undefined;
 
-    public constructor(createFunctionAppSettings?: ((context: IAppSettingsContext) => Promise<NameValuePair[]>)) {
+    public constructor(createFunctionAppSettings?: ((context: IAppSettingsContext) => Promise<Models.NameValuePair[]>)) {
         super();
         this.createFunctionAppSettings = createFunctionAppSettings;
     }
@@ -40,7 +39,7 @@ export class SiteCreateStep extends AzureWizardExecuteStep<IAppServiceWizardCont
             localize('creatingNewWebApp', 'Creating new web app "{0}"...', wizardContext.newSiteName);
         ext.outputChannel.appendLine(creatingNewApp);
         progress.report({ message: creatingNewApp });
-        const client: WebSiteManagementClient = createAzureClient(wizardContext, WebSiteManagementClient);
+        const client: WebSiteManagementClient = createAzureClientV2(wizardContext, WebSiteManagementClient);
         wizardContext.site = await client.webApps.createOrUpdate(nonNullValueAndProp(wizardContext.resourceGroup, 'name'), nonNullProp(wizardContext, 'newSiteName'), {
             name: wizardContext.newSiteName,
             kind: getSiteModelKind(wizardContext.newSiteKind, nonNullProp(wizardContext, 'newSiteOS')),
@@ -56,8 +55,8 @@ export class SiteCreateStep extends AzureWizardExecuteStep<IAppServiceWizardCont
         return !wizardContext.site;
     }
 
-    private async getNewSiteConfig(wizardContext: IAppServiceWizardContext): Promise<SiteConfig> {
-        const newSiteConfig: SiteConfig = {};
+    private async getNewSiteConfig(wizardContext: IAppServiceWizardContext): Promise<Models.SiteConfig> {
+        const newSiteConfig: Models.SiteConfig = {};
         if (wizardContext.newSiteKind === AppKind.app) {
             newSiteConfig.linuxFxVersion = wizardContext.newSiteRuntime;
         } else {

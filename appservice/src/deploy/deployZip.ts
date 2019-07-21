@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppServicePlan } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import * as vscode from 'vscode';
@@ -15,7 +15,7 @@ import { deployToStorageAccount } from './deployToStorageAccount';
 import { formatDeployLog } from './formatDeployLog';
 import { waitForDeploymentToComplete } from './waitForDeploymentToComplete';
 
-export async function deployZip(client: SiteClient, fsPath: string, aspPromise: Promise<AppServicePlan | undefined>): Promise<void> {
+export async function deployZip(client: SiteClient, fsPath: string, aspPromise: Promise<Models.AppServicePlan | undefined>): Promise<void> {
     if (!(await fse.pathExists(fsPath))) {
         throw new Error(localize('pathNotExist', 'Failed to deploy path that does not exist: {0}', fsPath));
     }
@@ -32,7 +32,7 @@ export async function deployZip(client: SiteClient, fsPath: string, aspPromise: 
 
     try {
         ext.outputChannel.appendLine(formatDeployLog(client, localize('deployStart', 'Starting deployment...')));
-        let asp: AppServicePlan | undefined;
+        let asp: Models.AppServicePlan | undefined;
 
         // if a user has access to the app but not the plan, this will cause an error.  We will make the same assumption as below in this case.
         try {
@@ -76,7 +76,7 @@ async function getZipFileToDeploy(fsPath: string, isFunctionApp: boolean): Promi
     }
 }
 
-async function delayFirstWebAppDeploy(client: SiteClient, asp: AppServicePlan | undefined): Promise<void> {
+async function delayFirstWebAppDeploy(client: SiteClient, asp: Models.AppServicePlan | undefined): Promise<void> {
     await new Promise<void>(async (resolve: () => void): Promise<void> => {
         setTimeout(resolve, 10000);
         try {

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StringDictionary } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as azureStorage from "azure-storage";
 import * as retry from 'p-retry';
 import { ext } from '../extensionVariables';
@@ -23,7 +23,7 @@ export async function deployToStorageAccount(client: SiteClient, zipFilePath: st
     const blobService: azureStorage.BlobService = await createBlobService(client);
     ext.outputChannel.appendLine(formatDeployLog(client, localize('creatingBlob', 'Uploading zip package to storage container...')));
     const blobUrl: string = await createBlobFromZip(blobService, zipFilePath, blobName);
-    const appSettings: StringDictionary = await client.listApplicationSettings();
+    const appSettings: Models.StringDictionary = await client.listApplicationSettings();
     // tslint:disable-next-line:strict-boolean-expressions
     appSettings.properties = appSettings.properties || {};
     delete appSettings.properties.WEBSITE_RUN_FROM_ZIP; // delete old app setting name if it exists
@@ -52,7 +52,7 @@ export async function deployToStorageAccount(client: SiteClient, zipFilePath: st
 async function createBlobService(client: SiteClient): Promise<azureStorage.BlobService> {
     // Use same storage account as AzureWebJobsStorage for deployments
     const azureWebJobsStorageKey: string = 'AzureWebJobsStorage';
-    const settings: StringDictionary = await client.listApplicationSettings();
+    const settings: Models.StringDictionary = await client.listApplicationSettings();
     if (settings.properties && settings.properties[azureWebJobsStorageKey]) {
         const blobService: azureStorage.BlobService = azureStorage.createBlobService(settings.properties[azureWebJobsStorageKey]);
         // Add retry filter since deploying may be a large file which can fail if network is poor

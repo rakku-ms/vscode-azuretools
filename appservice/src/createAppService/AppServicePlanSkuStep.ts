@@ -3,9 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SkuDescription } from 'azure-arm-website/lib/models';
-import { AzureWizardPromptStep } from 'vscode-azureextensionui';
-import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
+import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { nonNullProp } from '../utils/nonNull';
@@ -14,13 +13,13 @@ import { IAppServiceWizardContext } from './IAppServiceWizardContext';
 
 export class AppServicePlanSkuStep extends AzureWizardPromptStep<IAppServiceWizardContext> {
     public async prompt(wizardContext: IAppServiceWizardContext): Promise<void> {
-        const skus: SkuDescription[] = this.getCommonSkus();
+        const skus: Models.SkuDescription[] = this.getCommonSkus();
         if (wizardContext.newSiteOS === WebsiteOS.windows && wizardContext.newSiteKind === AppKind.functionapp) {
             skus.push(...this.getElasticPremiumSkus());
 
         }
 
-        const pricingTiers: IAzureQuickPickItem<SkuDescription>[] = skus.map((s: SkuDescription) => {
+        const pricingTiers: IAzureQuickPickItem<Models.SkuDescription>[] = skus.map((s: Models.SkuDescription) => {
             return {
                 label: nonNullProp(s, 'name'),
                 description: s.tier,
@@ -35,7 +34,7 @@ export class AppServicePlanSkuStep extends AzureWizardPromptStep<IAppServiceWiza
         return !wizardContext.newPlanSku;
     }
 
-    private getCommonSkus(): SkuDescription[] {
+    private getCommonSkus(): Models.SkuDescription[] {
         return [
             {
                 name: 'F1',
@@ -110,7 +109,7 @@ export class AppServicePlanSkuStep extends AzureWizardPromptStep<IAppServiceWiza
         ];
     }
 
-    private getElasticPremiumSkus(): SkuDescription[] {
+    private getElasticPremiumSkus(): Models.SkuDescription[] {
         return [
             {
                 name: 'EP1',

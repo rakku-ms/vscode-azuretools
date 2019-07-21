@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SlotConfigNamesResource, StringDictionary } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as path from 'path';
 import { AzureTreeItem, DialogResponses, IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
@@ -62,7 +62,7 @@ export class AppSettingTreeItem extends AzureTreeItem<ISiteTreeRoot> {
     }
 
     public async rename(context: IActionContext): Promise<void> {
-        const settings: StringDictionary = await this.parent.ensureSettings(context);
+        const settings: Models.StringDictionary = await this.parent.ensureSettings(context);
 
         const oldKey: string = this._key;
         const newKey: string = await ext.ui.showInputBox({
@@ -87,7 +87,7 @@ export class AppSettingTreeItem extends AzureTreeItem<ISiteTreeRoot> {
     }
 
     public async toggleSlotSetting(): Promise<void> {
-        const slotSettings: SlotConfigNamesResource = await this.root.client.listSlotConfigurationNames();
+        const slotSettings: Models.SlotConfigNamesResource = await this.root.client.listSlotConfigurationNames();
         if (!slotSettings.appSettingNames) {
             slotSettings.appSettingNames = [];
         }
@@ -104,7 +104,7 @@ export class AppSettingTreeItem extends AzureTreeItem<ISiteTreeRoot> {
     }
 
     public async refreshImpl(): Promise<void> {
-        const slotSettings: SlotConfigNamesResource = await this.root.client.listSlotConfigurationNames();
+        const slotSettings: Models.SlotConfigNamesResource = await this.root.client.listSlotConfigurationNames();
         if (slotSettings.appSettingNames && slotSettings.appSettingNames.find((value: string) => { return value === this._key; })) {
             this.description = localize('slotSetting', 'Slot Setting');
         } else {

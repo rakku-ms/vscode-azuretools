@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { User } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as git from 'simple-git/promise';
 import * as vscode from 'vscode';
 import { DialogResponses, IActionContext, UserCancelledError } from 'vscode-azureextensionui';
@@ -18,7 +18,7 @@ import { formatDeployLog } from './formatDeployLog';
 import { waitForDeploymentToComplete } from './waitForDeploymentToComplete';
 
 export async function localGitDeploy(client: SiteClient, fsPath: string, context: IActionContext): Promise<void> {
-    const publishCredentials: User = await client.getWebAppPublishCredential();
+    const publishCredentials: Models.User = await client.getWebAppPublishCredential();
     const publishingPassword: string = nonNullProp(publishCredentials, 'publishingPassword');
 
     await callWithMaskHandling(

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { User } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import * as EventEmitter from 'events';
 import { IncomingMessage } from 'http';
 import { createServer, Server, Socket } from 'net';
@@ -22,11 +22,11 @@ import { delay } from './utils/delay';
 class TunnelSocket extends EventEmitter {
     private _socket: Socket;
     private _client: SiteClient;
-    private _publishCredential: User;
+    private _publishCredential: Models.User;
     private _wsConnection: websocket.connection | undefined;
     private _wsClient: websocket.client;
 
-    constructor(socket: Socket, client: SiteClient, publishCredential: User) {
+    constructor(socket: Socket, client: SiteClient, publishCredential: Models.User) {
         super();
         this._socket = socket;
         this._client = client;
@@ -145,12 +145,12 @@ class RetryableTunnelStatusError extends Error { }
 export class TunnelProxy {
     private _port: number;
     private _client: SiteClient;
-    private _publishCredential: User;
+    private _publishCredential: Models.User;
     private _server: Server;
     private _openSockets: TunnelSocket[];
     private _isSsh: boolean;
 
-    constructor(port: number, client: SiteClient, publishCredential: User, isSsh: boolean = false) {
+    constructor(port: number, client: SiteClient, publishCredential: Models.User, isSsh: boolean = false) {
         this._port = port;
         this._client = client;
         this._publishCredential = publishCredential;

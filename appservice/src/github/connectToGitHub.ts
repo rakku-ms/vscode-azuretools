@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SiteSourceControl } from 'azure-arm-website/lib/models';
+import { WebSiteManagementModels as Models } from '@azure/arm-appservice';
 import { TokenCredentials, WebResource } from 'ms-rest';
 import { Response } from 'request';
 import * as request from 'request-promise';
@@ -45,7 +45,7 @@ export async function connectToGitHub(node: AzureTreeItem, client: SiteClient, c
 
     await wizard.prompt();
 
-    const siteSourceControl: SiteSourceControl = {
+    const siteSourceControl: Models.SiteSourceControl = {
         repoUrl: nonNullProp(context, 'repoData').html_url,
         branch: nonNullProp(context, 'branchData').name,
         isManualIntegration: false,

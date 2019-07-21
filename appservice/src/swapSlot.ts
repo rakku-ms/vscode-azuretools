@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from 'azure-arm-website';
+import { WebSiteManagementClient } from '@azure/arm-appservice';
 import { ProgressLocation, window } from 'vscode';
-import { AzureTreeItem, createAzureClient, IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { AzureTreeItem, createAzureClientV2, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from './extensionVariables';
 import { localize } from './localize';
 import { SiteClient } from './SiteClient';
@@ -40,7 +40,7 @@ export async function swapSlot(sourceSlotNode: AzureTreeItem<ISiteTreeRoot>, exi
     const swappingSlots: string = localize('swapping', 'Swapping "{0}" with "{1}"...', targetSlotLabel, sourceSlotClient.fullName);
     const successfullySwapped: string = localize('swapped', 'Successfully swapped "{0}" with "{1}".', targetSlotLabel, sourceSlotClient.fullName);
     ext.outputChannel.appendLine(swappingSlots);
-    const client: WebSiteManagementClient = createAzureClient(sourceSlotNode.root, WebSiteManagementClient);
+    const client: WebSiteManagementClient = createAzureClientV2(sourceSlotNode.root, WebSiteManagementClient);
     await window.withProgress({ location: ProgressLocation.Notification, title: swappingSlots }, async () => {
         // if targetSlot was assigned undefined, the user selected 'production'
         if (!targetSlot) {

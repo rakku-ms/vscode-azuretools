@@ -3,9 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from 'azure-arm-website';
-import { ResourceNameAvailability } from 'azure-arm-website/lib/models';
-import { AzureNameStep, createAzureClient, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules, StorageAccountListStep, storageAccountNamingRules } from 'vscode-azureextensionui';
+import { WebSiteManagementClient, WebSiteManagementModels as Models } from '@azure/arm-appservice';
+import { AzureNameStep, createAzureClientV2, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules, StorageAccountListStep, storageAccountNamingRules } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { AppKind } from './AppKind';
@@ -15,7 +14,7 @@ import { IAppServiceWizardContext } from './IAppServiceWizardContext';
 
 export class SiteNameStep extends AzureNameStep<IAppServiceWizardContext> {
     public async prompt(wizardContext: IAppServiceWizardContext): Promise<void> {
-        const client: WebSiteManagementClient = createAzureClient(wizardContext, WebSiteManagementClient);
+        const client: WebSiteManagementClient = createAzureClientV2(wizardContext, WebSiteManagementClient);
         const prompt: string = wizardContext.newSiteKind === AppKind.functionapp ?
             localize('functionAppNamePrompt', 'Enter a globally unique name for the new function app.') :
             localize('webAppNamePrompt', 'Enter a globally unique name for the new web app.');
@@ -23,7 +22,7 @@ export class SiteNameStep extends AzureNameStep<IAppServiceWizardContext> {
             prompt,
             validateInput: async (value: string): Promise<string | undefined> => {
                 value = value ? value.trim() : '';
-                const nameAvailability: ResourceNameAvailability = await client.checkNameAvailability(value, 'site');
+                const nameAvailability: Models.ResourceNameAvailability = await client.checkNameAvailability(value, 'Site');
                 if (!nameAvailability.nameAvailable) {
                     return nameAvailability.message;
                 } else {

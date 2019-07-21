@@ -10,7 +10,7 @@ import { SiteClient } from './SiteClient';
 
 export async function functionsAdminRequest(client: SiteClient, urlPath: string): Promise<string> {
     const requestOptions: WebResource = new WebResource();
-    const adminKey: string = await client.getFunctionsAdminToken();
+    const adminKey: string = (await client.getFunctionsAdminToken()).body;
     await signRequest(requestOptions, new TokenCredentials(adminKey));
     // tslint:disable-next-line:no-unsafe-any
     return await requestP.get(`${client.defaultHostUrl}/admin/${urlPath}`, requestOptions);
