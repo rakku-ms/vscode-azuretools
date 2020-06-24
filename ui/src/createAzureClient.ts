@@ -10,8 +10,9 @@ import { addExtensionUserAgent } from "./extensionUserAgent";
 
 export function createAzureClient<T extends IAddUserAgent>(
     clientInfo: { credentials: ServiceClientCredentials; subscriptionId: string; environment: AzureEnvironment; },
-    clientType: new (credentials: ServiceClientCredentials, subscriptionId: string, baseUri?: string, options?: AzureServiceClientOptions) => T): T {
-    const client: T = new clientType(clientInfo.credentials, clientInfo.subscriptionId, clientInfo.environment.resourceManagerEndpointUrl);
+    clientType: new (credentials: ServiceClientCredentials, subscriptionId: string, clientOptions?: {}, options?: AzureServiceClientOptions) => T): T {
+    var clientOptions = { "baseUri": clientInfo.environment.resourceManagerEndpointUrl };
+    const client: T = new clientType(clientInfo.credentials, clientInfo.subscriptionId, clientOptions);
     addExtensionUserAgent(client);
     return client;
 }
